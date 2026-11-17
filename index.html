@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>United Lift – лифтовое оборудование под задачу объекта</title>
+  <meta name="description" content="United Lift подбирает, поставляет, устанавливает и запускает лифты, эскалаторы, траволаторы и подъёмные платформы в Узбекистане.">
+  <script>
+    /* до первой отрисовки: движение включено, если нет ?static и prefers-reduced-motion – тогда [data-reveal] ждут своего приёма */
+    if (!/[?&]static/.test(location.search) && !matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('has-motion');
+  </script>
+
+  <!-- Версия 2: шрифт Google Sans (OFL), файлы в assets/fonts/google-sans (подключены в styles/v2/base.css). Основная версия – index.html -->
+  <link rel="preload" href="assets/fonts/google-sans/googlesans-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+
+  <!-- Стили: порядок важен – токены → база → компоненты → секции. Перед выкладкой поднять ?v=N -->
+  <link rel="stylesheet" href="styles/v2/tokens.css?v=3">
+  <link rel="stylesheet" href="styles/v2/base.css?v=3">
+  <link rel="stylesheet" href="styles/v2/components.css?v=3">
+  <link rel="stylesheet" href="styles/v2/sections.css?v=3">
+
+  <!-- 3D: Three.js через importmap, грузится лениво из js/scene.js только если на странице есть [data-scene] -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"
+    }
+  }
+  </script>
+
+  <!-- Движение: GSAP + ScrollTrigger + SplitText, плавный скролл – Lenis. Версии закреплены, см. LOG.md -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/SplitText.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.26/dist/lenis.min.js"></script>
+</head>
+<body>
+  <header class="nav" id="nav">
+    <a class="nav__logo" href="#hero" aria-label="United Lift – наверх">
+      <svg viewBox="0 0 4264 962" fill="currentColor" aria-hidden="true"><path d="M1335.08 815.137C1229.57 815.137 1159.43 758.037 1159.43 644.456V374.468H1241.36V638.249C1241.36 707.763 1276.12 743.761 1335.08 743.761C1394.04 743.761 1428.18 707.763 1428.18 638.249V374.468H1510.73V644.456C1510.73 758.037 1439.35 815.137 1335.08 815.137Z"/><path d="M1797.99 624.594C1797.99 571.838 1775.02 545.77 1732.2 545.77C1688.75 545.77 1657.1 571.838 1657.1 624.594V808.931H1577.65V486.187H1657.1V552.598H1659.58C1665.78 524.668 1696.82 479.98 1765.09 479.98C1828.4 479.98 1877.43 518.461 1877.43 605.975V808.931H1797.99V624.594Z"/><path d="M1944.35 808.931V486.187H2023.79V808.931H1944.35ZM1984.07 440.879C1959.87 440.879 1938.76 421.638 1938.76 396.191C1938.76 370.744 1959.87 351.503 1984.07 351.503C2007.66 351.503 2028.76 370.744 2028.76 396.191C2028.76 421.638 2007.66 440.879 1984.07 440.879Z"/><path d="M2223.25 813.275C2162.42 813.275 2122.7 786.587 2122.7 718.314V548.253H2068.7V486.187H2122.7V403.639H2202.14V486.187H2265.45V548.253H2202.14V705.901C2202.14 733.831 2210.830 749.347 2244.35 749.347C2251.8 749.347 2257.38 749.347 2269.17 748.106V807.689C2255.52 811.413 2240 813.275 2223.25 813.275Z"/><path d="M2458.07 815.137C2374.28 815.137 2298.56 767.346 2298.56 646.938C2298.56 527.771 2372.42 479.98 2456.83 479.98C2540 479.98 2608.27 525.909 2608.27 643.835C2608.27 655.007 2607.65 661.213 2606.41 668.041H2373.66C2378.63 728.245 2409.04 754.313 2459.94 754.313C2500.28 754.313 2523.86 738.796 2533.17 707.763H2603.93C2586.55 781.001 2530.07 815.137 2458.07 815.137ZM2374.28 619.629H2533.17C2531.31 574.321 2507.73 540.805 2455.59 540.805C2409.04 540.805 2379.87 566.873 2374.28 619.629Z"/><path d="M2788.6 815.137C2719.09 815.137 2646.47 765.484 2646.47 647.559C2646.47 529.633 2719.09 479.98 2788.6 479.98C2835.77 479.98 2873.01 502.324 2888.53 532.737V374.468H2967.98V808.931H2888.53V762.381C2873.01 792.794 2835.77 815.137 2788.6 815.137ZM2807.22 748.727C2850.67 748.727 2892.25 717.073 2892.25 647.559C2892.25 578.045 2850.67 546.391 2807.22 546.391C2762.54 546.391 2720.95 578.045 2720.95 647.559C2720.95 717.073 2762.54 748.727 2807.22 748.727Z"/><path d="M3177.79 808.931V374.468H3259.1V737.555H3465.16V808.931H3177.79Z"/><path d="M3516.01 808.931V486.187H3595.45V808.931H3516.01ZM3555.73 440.879C3531.52 440.879 3510.42 421.638 3510.42 396.191C3510.42 370.744 3531.52 351.503 3555.73 351.503C3579.31 351.503 3600.41 370.744 3600.41 396.191C3600.41 421.638 3579.31 440.879 3555.73 440.879Z"/><path d="M3681.42 458.878C3681.42 390.605 3721.76 364.537 3781.35 364.537H3826.030V425.362H3800.59C3771.42 425.362 3760.87 440.258 3760.87 468.188V486.187H3824.17V547.632H3760.87V808.931H3681.42V547.632H3636.11V486.187H3681.42V458.878Z"/><path d="M4007.65 813.275C3946.82 813.275 3907.1 786.587 3907.1 718.314V548.253H3853.1V486.187H3907.1V403.639H3986.54V486.187H4049.85V548.253H3986.54V705.901C3986.54 733.831 3995.23 749.347 4028.75 749.347C4036.2 749.347 4041.78 749.347 4053.57 748.106V807.689C4039.92 811.413 4024.4 813.275 4007.65 813.275Z"/><path d="M4104.87 107.389V21.8347H4074.57V8.72676H4149.83V21.8347H4119.53V107.389H4104.87Z"/><path d="M4161.38 107.389V8.72676H4179.42L4212.4 87.9381L4245.38 8.72676H4263.43V107.389H4248.77V34.9426H4248.2L4218.18 107.389H4206.63L4176.46 34.9426H4176.04V107.389H4161.38Z"/><path d="M7.5456e-05 400.386L0 960.95L354.179 961.247L647.634 668.219L268.489 667.57L268.489 131.897L7.5456e-05 400.386Z"/><path d="M673.172 266.793L674.705 640.738L939.047 376.359V0.917969L673.172 266.793Z"/></svg>
+    </a>
+    <nav class="nav__center" aria-label="Разделы">
+      <div class="seg body-s">
+        <span class="seg__chip" aria-hidden="true"></span>
+        <a href="#equipment" data-for="equipment">Оборудование</a>
+        <a href="#process" data-for="process">Этапы</a>
+        <a href="#service" data-for="service">Сервис</a>
+        <a href="#projects" data-for="projects">Объекты</a>
+        <a href="#results" data-for="results">Результаты</a>
+        <a href="#contact" data-for="contact">Контакты</a>
+      </div>
+    </nav>
+    <div class="nav__right">
+      <div class="nav__plaque">
+        <div class="seg seg--bare lang body-s" aria-label="Язык">
+          <span class="seg__chip" aria-hidden="true"></span>
+          <a href="?lang=ru" data-lang="ru" hreflang="ru">RU</a>
+          <a href="?lang=uz" data-lang="uz" hreflang="uz">UZ</a>
+          <a href="?lang=en" data-lang="en" hreflang="en">EN</a>
+        </div>
+        <a class="btn btn--white btn--chip body-s" href="#contact">Обсудить проект <span class="btn__arr"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 12 12 4M6 4h6v6"/></svg></span></a>
+      </div>
+      <button class="menu-btn body-s" type="button" aria-expanded="false" aria-controls="sheet">Меню</button>
+    </div>
+  </header>
+
+  <div class="sheet" id="sheet">
+    <nav class="sheet__links title-m" aria-label="Разделы">
+      <a href="#equipment">Оборудование</a>
+      <a href="#process">Этапы</a>
+      <a href="#service">Сервис</a>
+      <a href="#projects">Объекты</a>
+      <a href="#results">Результаты</a>
+      <a href="#contact">Контакты</a>
+    </nav>
+    <div class="seg lang body-s" aria-label="Язык">
+      <span class="seg__chip" aria-hidden="true"></span>
+      <a href="?lang=ru" data-lang="ru" hreflang="ru">RU</a><a href="?lang=uz" data-lang="uz" hreflang="uz">UZ</a><a href="?lang=en" data-lang="en" hreflang="en">EN</a>
+    </div>
+    <a class="btn btn--white body-m" href="tel:+998783338008">Позвонить: +998 78 333-80-08</a>
+  </div>
+
+  <main>
+    <!-- 01 hero -->
+    <section id="hero" class="hero section--brand" data-scene aria-labelledby="hero-title">
+      <picture class="scene__fallback" aria-hidden="true">
+        <source media="(max-width: 768px)" srcset="assets/img/hero-xray-390.webp">
+        <img src="assets/img/hero-xray-1440.webp" alt="" width="1440" height="900">
+      </picture>
+      <div class="hero__body">
+        <div class="wrapper grid-12">
+          <div class="hero__text">
+            <h1 id="hero-title" class="display-xl" data-reveal="lines">Лифтовое оборудование под&nbsp;задачу объекта</h1>
+            <p class="hero__lead body-l muted" data-reveal="fade" data-reveal-delay="0.3">Подбираем, поставляем, устанавливаем и&nbsp;запускаем лифты, эскалаторы, траволаторы и&nbsp;подъёмные платформы в&nbsp;Узбекистане&nbsp;– от&nbsp;шахты до&nbsp;кнопки вызова.</p>
+            <div class="hero__act" data-reveal="fade" data-reveal-delay="0.45">
+              <a class="btn btn--white body-m" href="#contact">Обсудить поставку и&nbsp;установку <span class="btn__arr"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2 8h12M9 3l5 5-5 5"/></svg></span></a>
+              <a class="btn btn--glass body-m" href="#equipment">Оборудование</a>
+            </div>
+          </div>
+        </div>
+        <div class="wrapper grid-12">
+          <ul class="hero__facts" data-reveal="stagger" data-reveal-delay="0.6">
+            <li class="glass hero__fact"><strong class="title-m">20+ лет</strong><span class="body-m">в&nbsp;лифтовой отрасли Узбекистана</span></li>
+            <li class="glass hero__fact"><strong class="title-m">Полный цикл</strong><span class="body-m">подбор, проект, поставка, монтаж, запуск</span></li>
+            <li class="glass hero__fact"><strong class="title-m">4 вида</strong><span class="body-m">лифты, эскалаторы, траволаторы, платформы</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 equipment -->
+    <section id="equipment" class="section equipment" data-surface="light" aria-labelledby="equipment-title">
+      <div class="wrapper grid-12 equipment__head">
+        <h2 id="equipment-title" class="equipment__title display-s" data-reveal="lines">Четыре вида оборудования под&nbsp;задачи здания</h2>
+        <p class="equipment__lead body-l muted" data-reveal="fade" data-reveal-delay="0.2">Начинаем с&nbsp;назначения здания и&nbsp;потока людей, а&nbsp;не&nbsp;с&nbsp;каталога. Тип, производителя и&nbsp;комплектацию подбираем под&nbsp;объект.</p>
+      </div>
+      <div class="wrapper grid-12 equipment__cards" data-reveal="stagger" data-reveal-stagger="0.1">
+        <a class="eq-card" href="#contact">
+          <div class="eq-card__pic"><img src="assets/img/equip-lifts.webp" alt="Панорамные лифты в атриуме" width="900" height="600" loading="lazy"></div>
+          <div class="eq-card__body"><h3 class="title-s">Лифты</h3><p class="body-m">Пассажирские, панорамные, больничные и&nbsp;грузовые&nbsp;– под&nbsp;назначение здания, этажность и&nbsp;нагрузку.</p></div>
+        </a>
+        <a class="eq-card" href="#contact">
+          <div class="eq-card__pic"><img src="assets/img/equip-escalators.webp" alt="Эскалаторы на станции метро" width="900" height="507" loading="lazy"></div>
+          <div class="eq-card__body"><h3 class="title-s">Эскалаторы</h3><p class="body-m">Для&nbsp;зданий, где люди постоянно переходят между этажами: торговых, транспортных, общественных.</p></div>
+        </a>
+        <a class="eq-card" href="#contact">
+          <div class="eq-card__pic"><img src="assets/img/equip-walkway.webp" alt="Траволатор в терминале аэропорта" width="900" height="600" loading="lazy"></div>
+          <div class="eq-card__body"><h3 class="title-s">Траволаторы</h3><p class="body-m">Движущиеся дорожки для&nbsp;длинных переходов и&nbsp;перепада уровней без&nbsp;ступеней.</p></div>
+        </a>
+        <a class="eq-card" href="#contact">
+          <div class="eq-card__pic"><img src="assets/img/equip-platform.webp" alt="Подъёмная платформа для людей на креслах-колясках" width="900" height="675" loading="lazy"></div>
+          <div class="eq-card__body"><h3 class="title-s">Подъёмные платформы</h3><p class="body-m">Для&nbsp;людей и&nbsp;грузов там, где кабина лифта не&nbsp;нужна или не&nbsp;помещается.</p></div>
+        </a>
+      </div>
+    </section>
+
+    <!-- 03 process -->
+    <section id="process" class="section process" data-surface="light" aria-labelledby="process-title">
+      <div class="wrapper grid-12 process__head">
+        <h2 id="process-title" class="process__title display-s" data-reveal="lines">Что мы берём на&nbsp;себя</h2>
+        <p class="process__lead body-l muted" data-reveal="fade" data-reveal-delay="0.2">Поставка и&nbsp;установка&nbsp;– основная работа United Lift. Вот из&nbsp;чего она состоит и&nbsp;что получается на&nbsp;каждом этапе.</p>
+      </div>
+      <div class="wrapper">
+        <ol class="process__rows" data-reveal="stagger" data-reveal-stagger="0.12">
+          <li class="grid-12 prow" style="--i: 0">
+            <span class="prow__num title-m">1</span>
+            <div class="prow__text">
+              <h3 class="title-m">Подбор</h3>
+              <p class="body-l">Разбираем назначение здания, этажность и&nbsp;поток людей. Предлагаем тип и&nbsp;состав оборудования.</p>
+              <p class="prow__result body-m"><span class="body-s">Результат</span>Понятно, какое оборудование нужно зданию.</p>
+            </div>
+            <div class="prow__pic"><svg viewBox="0 0 360 240" data-iso="stage-1" aria-hidden="true"></svg></div>
+          </li>
+          <li class="grid-12 prow" style="--i: 1">
+            <span class="prow__num title-m">2</span>
+            <div class="prow__text">
+              <h3 class="title-m">Проектирование</h3>
+              <p class="body-l">Увязываем оборудование с&nbsp;проектом здания: размеры шахты, приямок, машинное помещение, нагрузки.</p>
+              <p class="prow__result body-m"><span class="body-s">Результат</span>Шахта и&nbsp;оборудование сходятся в&nbsp;проекте.</p>
+            </div>
+            <div class="prow__pic"><svg viewBox="0 0 360 240" data-iso="stage-2" aria-hidden="true"></svg></div>
+          </li>
+          <li class="grid-12 prow" style="--i: 2">
+            <span class="prow__num title-m">3</span>
+            <div class="prow__text">
+              <h3 class="title-m">Поставка</h3>
+              <p class="body-l">Организуем поставку оборудования на&nbsp;объект и&nbsp;проверяем комплектность.</p>
+              <p class="prow__result body-m"><span class="body-s">Результат</span>Оборудование на&nbsp;площадке в&nbsp;полном составе.</p>
+            </div>
+            <div class="prow__pic"><svg viewBox="0 0 360 240" data-iso="stage-3" aria-hidden="true"></svg></div>
+          </li>
+          <li class="grid-12 prow" style="--i: 3">
+            <span class="prow__num title-m">4</span>
+            <div class="prow__text">
+              <h3 class="title-m">Монтаж</h3>
+              <p class="body-l">Устанавливаем направляющие, кабину, противовес, лебёдку и&nbsp;двери шахты.</p>
+              <p class="prow__result body-m"><span class="body-s">Результат</span>Лифт собран в&nbsp;шахте.</p>
+            </div>
+            <div class="prow__pic"><svg viewBox="0 0 360 240" data-iso="stage-4" aria-hidden="true"></svg></div>
+          </li>
+          <li class="grid-12 prow" style="--i: 4">
+            <span class="prow__num title-m">5</span>
+            <div class="prow__text">
+              <h3 class="title-m">Пусконаладка</h3>
+              <p class="body-l">Настраиваем, запускаем и&nbsp;передаём оборудование в&nbsp;работу.</p>
+              <p class="prow__result body-m"><span class="body-s">Результат</span>Двери открываются, лифт возит людей.</p>
+            </div>
+            <div class="prow__pic"><svg viewBox="0 0 360 240" data-iso="stage-5" aria-hidden="true"></svg></div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- 04 service -->
+    <section id="service" class="service" aria-labelledby="service-title">
+      <picture class="service__photo" aria-hidden="true">
+        <img src="assets/img/service.webp" alt="" width="1600" height="1067" loading="lazy">
+      </picture>
+      <div class="wrapper grid-12">
+        <div class="service__card" data-reveal="fade">
+          <h2 id="service-title" class="title-m">После запуска</h2>
+          <p class="body-l muted">Техническое обслуживание&nbsp;– продолжение работы с&nbsp;оборудованием, которое мы установили: лифт должен возить людей и&nbsp;через годы после запуска.</p>
+          <a class="btn btn--white body-m" href="#contact">Обсудить обслуживание <span class="btn__arr"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2 8h12M9 3l5 5-5 5"/></svg></span></a>
+        </div>
+      </div>
+    </section>
+    <!-- 05 projects -->
+    <section id="projects" class="section projects" data-surface="light" aria-labelledby="projects-title">
+      <div class="wrapper grid-12 projects__head">
+        <h2 id="projects-title" class="projects__title display-s" data-reveal="lines">Объекты</h2>
+        <p class="projects__lead body-l muted" data-reveal="fade" data-reveal-delay="0.2">Здания в&nbsp;Ташкенте, где установлены лифты SRH.</p>
+      </div>
+      <div class="wrapper grid-12 projects__list" data-reveal="stagger" data-reveal-stagger="0.12">
+        <article class="project">
+          <div class="project__pic"><img src="assets/img/project-palermo.webp" alt="Здание гостиницы Palermo Hotel" width="780" height="1040" loading="lazy"></div>
+          <div class="project__caption"><h3 class="title-m">Palermo Hotel</h3><p class="body-l">3&nbsp;лифта SRH</p></div>
+        </article>
+        <article class="project">
+          <div class="project__pic"><img src="assets/img/project-hokimiyat.webp" alt="Здание Хокимията города Ташкента" width="900" height="900" loading="lazy"></div>
+          <div class="project__caption"><h3 class="title-m">Хокимият города Ташкента</h3><p class="body-l">4&nbsp;лифта SRH</p></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 06 results -->
+    <section id="results" class="section results" data-surface="light" aria-labelledby="results-title">
+      <div class="wrapper grid-12 results__head">
+        <h2 id="results-title" class="results__title display-s" data-reveal="lines">Результаты на&nbsp;реальных объектах</h2>
+        <p class="results__lead body-l muted" data-reveal="fade" data-reveal-delay="0.2">Что остаётся после нашей работы: установленное оборудование и&nbsp;лифты, которые мы продолжаем обслуживать.</p>
+      </div>
+      <div class="float">
+        <div class="float__stage" aria-hidden="true"><img src="assets/img/cabin.webp" alt="" width="679" height="1400" loading="lazy" data-reveal="scrub"></div>
+        <div class="wrapper grid-12 float__cards">
+          <article class="rcard rcard--1" data-reveal="float" data-reveal-speed="1.2"><p class="display-l" data-reveal="roll">20+</p><p class="rcard__label body-l">лет в&nbsp;лифтовой отрасли Узбекистана</p></article>
+          <article class="rcard rcard--2" data-reveal="float" data-reveal-speed="0.7"><p class="display-l" data-reveal="roll">1240</p><p class="rcard__label body-l">единиц оборудования установлено: лифты, эскалаторы, траволаторы и&nbsp;платформы</p></article>
+          <article class="rcard rcard--3" data-reveal="float" data-reveal-speed="1"><p class="display-l" data-reveal="roll">310</p><p class="rcard__label body-l">лифтов на&nbsp;нашем техническом обслуживании</p></article>
+          <article class="rcard rcard--4" data-reveal="float" data-reveal-speed="0.8"><p class="display-l" data-reveal="roll">98,8%</p><p class="rcard__label body-l">времени лифты на&nbsp;обслуживании в&nbsp;работе, в&nbsp;среднем за&nbsp;2025&nbsp;год</p></article>
+          <article class="rcard rcard--5" data-reveal="float" data-reveal-speed="1.1"><p class="display-l" data-reveal="roll">5</p><p class="rcard__label body-l">этапов&nbsp;– подбор, проект, поставка, монтаж и&nbsp;пусконаладка&nbsp;– ведёт одна команда</p></article>
+        </div>
+      </div>
+      <div class="wrapper grid-12"><p class="results__note body-s">Значения&nbsp;– пример до&nbsp;получения данных компании, кроме опыта более 20&nbsp;лет и&nbsp;состава работ. Фото кабины&nbsp;– иллюстративное.</p></div>
+    </section>
+  </main>
+
+  <footer>
+    <!-- 07 contact -->
+    <section id="contact" class="section--brand contact" aria-labelledby="contact-title">
+      <div class="wrapper grid-12 contact__main">
+        <div class="contact__cta">
+          <h2 id="contact-title" class="display-s" data-reveal="lines">Расскажите об&nbsp;объекте&nbsp;– подберём оборудование</h2>
+          <p class="body-l muted" data-reveal="fade">Назначение здания, этажность и&nbsp;поток людей&nbsp;– этого достаточно, чтобы начать разговор.</p>
+          <a class="contact__tel display-m" href="tel:+998783338008" data-reveal="fade">+998 78 333-80-08</a>
+          <a class="btn btn--white body-m" href="tel:+998783338008" data-reveal="fade">Обсудить поставку и&nbsp;установку <span class="btn__arr"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2 8h12M9 3l5 5-5 5"/></svg></span></a>
+        </div>
+        <nav class="contact__col contact__col--a" aria-label="Оборудование" data-reveal="fade">
+          <p class="title-xxs">Оборудование</p>
+          <ul class="body-m"><li><a href="#equipment">Лифты</a></li><li><a href="#equipment">Эскалаторы</a></li><li><a href="#equipment">Траволаторы</a></li><li><a href="#equipment">Подъёмные платформы</a></li></ul>
+        </nav>
+        <div class="contact__col contact__col--b" data-reveal="fade">
+          <p class="title-xxs">Контакты</p>
+          <ul class="body-m"><li><a href="tel:+998783338008">+998 78 333-80-08</a></li><li><a href="mailto:info@unitedlift.uz">info@unitedlift.uz</a></li><li>100100, Ташкент, ул.&nbsp;Алишера Навои,&nbsp;79</li></ul>
+        </div>
+      </div>
+      <div class="wrapper grid-12 contact__bottom">
+        <p class="contact__copy body-s">© 2026 United Lift</p>
+        <a class="contact__mark" href="#hero" aria-label="United Lift – наверх" data-reveal="fade"><svg viewBox="1159 351 2895 466" fill="currentColor" aria-hidden="true"><path d="M1335.08 815.137C1229.57 815.137 1159.43 758.037 1159.43 644.456V374.468H1241.36V638.249C1241.36 707.763 1276.12 743.761 1335.08 743.761C1394.04 743.761 1428.18 707.763 1428.18 638.249V374.468H1510.73V644.456C1510.73 758.037 1439.35 815.137 1335.08 815.137Z"/><path d="M1797.99 624.594C1797.99 571.838 1775.02 545.77 1732.2 545.77C1688.75 545.77 1657.1 571.838 1657.1 624.594V808.931H1577.65V486.187H1657.1V552.598H1659.58C1665.78 524.668 1696.82 479.98 1765.09 479.98C1828.4 479.98 1877.43 518.461 1877.43 605.975V808.931H1797.99V624.594Z"/><path d="M1944.35 808.931V486.187H2023.79V808.931H1944.35ZM1984.07 440.879C1959.87 440.879 1938.76 421.638 1938.76 396.191C1938.76 370.744 1959.87 351.503 1984.07 351.503C2007.66 351.503 2028.76 370.744 2028.76 396.191C2028.76 421.638 2007.66 440.879 1984.07 440.879Z"/><path d="M2223.25 813.275C2162.42 813.275 2122.7 786.587 2122.7 718.314V548.253H2068.7V486.187H2122.7V403.639H2202.14V486.187H2265.45V548.253H2202.14V705.901C2202.14 733.831 2210.830 749.347 2244.35 749.347C2251.8 749.347 2257.38 749.347 2269.17 748.106V807.689C2255.52 811.413 2240 813.275 2223.25 813.275Z"/><path d="M2458.07 815.137C2374.28 815.137 2298.56 767.346 2298.56 646.938C2298.56 527.771 2372.42 479.98 2456.83 479.98C2540 479.98 2608.27 525.909 2608.27 643.835C2608.27 655.007 2607.65 661.213 2606.41 668.041H2373.66C2378.63 728.245 2409.04 754.313 2459.94 754.313C2500.28 754.313 2523.86 738.796 2533.17 707.763H2603.93C2586.55 781.001 2530.07 815.137 2458.07 815.137ZM2374.28 619.629H2533.17C2531.31 574.321 2507.73 540.805 2455.59 540.805C2409.04 540.805 2379.87 566.873 2374.28 619.629Z"/><path d="M2788.6 815.137C2719.09 815.137 2646.47 765.484 2646.47 647.559C2646.47 529.633 2719.09 479.98 2788.6 479.98C2835.77 479.98 2873.01 502.324 2888.53 532.737V374.468H2967.98V808.931H2888.53V762.381C2873.01 792.794 2835.77 815.137 2788.6 815.137ZM2807.22 748.727C2850.67 748.727 2892.25 717.073 2892.25 647.559C2892.25 578.045 2850.67 546.391 2807.22 546.391C2762.54 546.391 2720.95 578.045 2720.95 647.559C2720.95 717.073 2762.54 748.727 2807.22 748.727Z"/><path d="M3177.79 808.931V374.468H3259.1V737.555H3465.16V808.931H3177.79Z"/><path d="M3516.01 808.931V486.187H3595.45V808.931H3516.01ZM3555.73 440.879C3531.52 440.879 3510.42 421.638 3510.42 396.191C3510.42 370.744 3531.52 351.503 3555.73 351.503C3579.31 351.503 3600.41 370.744 3600.41 396.191C3600.41 421.638 3579.31 440.879 3555.73 440.879Z"/><path d="M3681.42 458.878C3681.42 390.605 3721.76 364.537 3781.35 364.537H3826.030V425.362H3800.59C3771.42 425.362 3760.87 440.258 3760.87 468.188V486.187H3824.17V547.632H3760.87V808.931H3681.42V547.632H3636.11V486.187H3681.42V458.878Z"/><path d="M4007.65 813.275C3946.82 813.275 3907.1 786.587 3907.1 718.314V548.253H3853.1V486.187H3907.1V403.639H3986.54V486.187H4049.85V548.253H3986.54V705.901C3986.54 733.831 3995.23 749.347 4028.75 749.347C4036.2 749.347 4041.78 749.347 4053.57 748.106V807.689C4039.92 811.413 4024.4 813.275 4007.65 813.275Z"/><path d="M4104.87 107.389V21.8347H4074.57V8.72676H4149.83V21.8347H4119.53V107.389H4104.87Z"/><path d="M4161.38 107.389V8.72676H4179.42L4212.4 87.9381L4245.38 8.72676H4263.43V107.389H4248.77V34.9426H4248.2L4218.18 107.389H4206.63L4176.46 34.9426H4176.04V107.389H4161.38Z"/><path d="M7.5456e-05 400.386L0 960.95L354.179 961.247L647.634 668.219L268.489 667.57L268.489 131.897L7.5456e-05 400.386Z"/><path d="M673.172 266.793L674.705 640.738L939.047 376.359V0.917969L673.172 266.793Z"/></svg></a>
+      </div>
+    </section>
+  </footer>
+
+  <script type="module" src="js/v2/main.js?v=3"></script>
+</body>
+</html>

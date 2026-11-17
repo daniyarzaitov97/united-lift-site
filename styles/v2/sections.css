@@ -1,0 +1,223 @@
+/* Секции: по одному блоку на секцию, в порядке карты из docs/design-system.md. Блок начинается с комментария «NN id».
+   Мобильные правила – в конце блока секции: @media (max-width: 768px) и (max-width: 500px). */
+
+/* 01 hero – рентген лифта на фирменном градиенте. Высота экрана, текст и факты по центру; сцена – холст под контентом */
+.hero { min-height: var(--h-screen); display: flex; flex-direction: column; overflow: hidden; }
+.hero .scene__fallback { position: absolute; inset: 0; z-index: var(--z-scene); }
+.hero .scene__fallback img { width: 100%; height: 100%; object-fit: cover; }
+.hero__body { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: var(--space-96); padding-top: calc(var(--nav-h) + var(--space-48)); padding-bottom: var(--space-32); }
+.hero__text { grid-column: 1 / 9; display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-32); }
+.hero__lead { max-width: var(--measure-lead); }
+.hero__act { display: flex; flex-wrap: wrap; gap: var(--space-12); }
+.hero__facts { grid-column: 1 / 8; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-8); }
+
+@media (max-width: 1100px) {
+  .hero__text, .hero__facts { grid-column: 1 / 10; }
+}
+/* низкие окна (1920 при 125 % → 730 px, ноутбук 768): факты помещаются в первый экран */
+@media (max-height: 820px) and (min-width: 769px) {
+  .hero__body { gap: var(--space-48); padding-top: calc(var(--nav-h) + var(--space-24)); }
+}
+@media (max-width: 768px) {
+  .hero__body { justify-content: space-between; gap: var(--hero-scene-gap-mobile); padding-top: calc(var(--nav-h) + var(--space-24)); }
+  .hero__text, .hero__facts { grid-column: 1 / -1; }
+  /* текст стоит поверх схемы – матовая подложка; поля −8/8, чтобы левая линия текста осталась на 16 */
+  .hero__text { margin-inline: calc(-1 * var(--space-8)); padding: var(--space-16) var(--space-8); background: var(--color-bg-scrim); backdrop-filter: var(--filter-scrim); border: 1px solid var(--color-line-on-dark); border-radius: var(--radius-l); }
+  .hero__act { flex-direction: column; align-items: stretch; width: 100%; }
+  .hero__facts { grid-template-columns: minmax(0, 1fr); }
+  .hero__fact { flex-direction: row; align-items: baseline; justify-content: space-between; gap: var(--space-16); }
+  .hero__fact strong { white-space: nowrap; }
+  .hero__fact span { text-align: right; }
+}
+
+/* 02 equipment – четыре вида оборудования: заголовок слева, лид справа по нижней линии, ряд карточек с фото */
+.equipment { background: var(--color-bg-page); padding-bottom: var(--space-96); }
+.equipment__head { row-gap: var(--space-32); padding-bottom: var(--space-64); }
+.equipment__title { grid-column: 1 / 8; }
+.equipment__lead { grid-column: 9 / 13; align-self: end; }
+.equipment__cards { row-gap: var(--gutter); }
+.eq-card { grid-column: span 3; display: flex; flex-direction: column; background: var(--color-bg-sheet); border: 1px solid var(--color-line); border-radius: var(--radius-l); overflow: hidden; transition: border-color var(--dur-450) var(--ease-out), transform var(--dur-600) var(--ease-out); }
+.eq-card__pic { aspect-ratio: var(--card-ratio); overflow: hidden; background: var(--color-gray); }
+.eq-card__pic img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--dur-1400) var(--ease-out); }
+.eq-card__body { flex: 1; display: flex; flex-direction: column; gap: var(--space-8); padding: var(--space-24); }
+.eq-card__body p { color: var(--color-fg-muted); }
+.eq-card:active { border-color: var(--color-line-strong); } /* нажатие на тач-экране (press) */
+@media (hover: hover) {
+  .eq-card:hover { border-color: var(--color-line-strong); transform: translateY(var(--card-lift)); }
+  .eq-card:hover .eq-card__pic img { transform: scale(var(--photo-zoom)); }
+}
+
+@media (max-width: 1100px) {
+  .eq-card { grid-column: span 6; }
+}
+@media (max-width: 768px) {
+  .equipment { padding-bottom: var(--space-64); }
+  .equipment__title, .equipment__lead, .eq-card { grid-column: 1 / -1; }
+}
+
+/* 03 process – состав работ по образцу svar-stol: этапы строками на всю ширину, слева номер и описание, справа живая схема этапа.
+   Один и тот же лифт собирается от этапа к этапу (js/iso.js, приём stage-loop) */
+/* Заголовок и лид секции прилипают под меню и стоят над стопкой, пока этапы сменяют друг друга (решение клиента 2026-11-06).
+   Фон – цвет страницы: плашки, уезжая в конце секции, проходят под ним. Высоту заголовка (--stack-head) меряет js/v2/ui.js */
+.process { padding-top: calc(var(--space-section) - var(--space-24)); }
+.process__head { position: sticky; top: var(--nav-h); z-index: var(--z-content); row-gap: var(--space-32); padding-top: var(--space-24); padding-bottom: var(--space-32); background: var(--color-bg-page); }
+.process__title { grid-column: 1 / 8; }
+.process__lead { grid-column: 9 / 13; align-self: end; }
+/* stage-stack (решение клиента, как в svar-stol): этапы – белые плашки, прилипают под заголовком секции, следующая наезжает на предыдущую.
+   Каждая следующая прилипает на --stack-step ниже – видна кромка предыдущей. Линий и теней нет: наехавшую плашку отделяет
+   полоса цвета фона (outline --stack-gap, повторяет скругление). Вторая «пин»-секция страницы – записано в базе */
+.process__rows { display: flex; flex-direction: column; gap: var(--space-16); }
+.prow { position: sticky; top: calc(var(--nav-h) + var(--stack-head, 0px) + var(--i, 0) * var(--stack-step)); align-items: start; row-gap: var(--space-24); padding: var(--space-32); background: var(--color-bg-sheet); border-radius: var(--radius-l); outline: var(--stack-gap) solid var(--color-bg-page); }
+.prow__num { grid-column: 1 / 2; color: var(--color-fg-muted); }
+/* текст тянется на высоту схемы, «Результат» прижат к её низу – без пустоты под текстом (проверка дизайна №33) */
+.prow__text { grid-column: 2 / 6; align-self: stretch; display: flex; flex-direction: column; gap: var(--space-16); }
+.prow__text > p { color: var(--color-fg-muted); }
+.prow__result { display: flex; flex-direction: column; gap: var(--space-4); margin-top: auto; padding-top: var(--space-16); border-top: 1px solid var(--color-line); }
+.prow__result span { color: var(--color-fg-muted); }
+.prow__pic { grid-column: 7 / 13; aspect-ratio: var(--stage-ratio); display: flex; background: var(--grad-brand); border-radius: var(--radius-l); overflow: hidden; }
+.prow__pic svg { width: 100%; height: 100%; }
+/* живые схемы этапов: только при включённом движении; в статике – итоговое состояние (двери открыты, всё прорисовано) */
+html:not(.has-motion) .a-door { transform: translate(var(--dx), var(--dy)); }
+.has-motion .a-run { animation: x-run var(--dur-1400) linear infinite; }
+.has-motion .a-pulse { animation: a-pulse var(--dur-loop) ease-in-out infinite; }
+.has-motion .a-draw path { stroke-dasharray: 1; animation: a-draw var(--dur-loop) ease-in-out infinite; }
+.has-motion .a-drop { animation: a-drop var(--dur-loop) ease-in-out var(--d) infinite; }
+.has-motion .a-hoist { animation: a-hoist var(--dur-loop) ease-in-out infinite; }
+.has-motion .a-door { animation: a-door var(--dur-loop) ease-in-out infinite; }
+@keyframes a-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+@keyframes a-draw { 0% { stroke-dashoffset: 1; } 45%, 85% { stroke-dashoffset: 0; opacity: 1; } 100% { stroke-dashoffset: 0; opacity: 0; } }
+@keyframes a-drop { 0% { transform: translateY(var(--drop)); opacity: 0; } 25%, 80% { transform: none; opacity: 1; } 100% { transform: none; opacity: 0; } }
+@keyframes a-hoist { 0%, 15% { transform: none; } 55%, 70% { transform: translateY(var(--rise)); } 100% { transform: none; } }
+@keyframes a-door { 0%, 20% { transform: none; } 45%, 75% { transform: translate(var(--dx), var(--dy)); } 100% { transform: none; } }
+
+/* стопка помещается в экран при любой высоте окна: схема не выше, чем остаётся под меню, заголовком
+   и кромками четырёх плашек над пятой (4 × --stack-step) с полями плашки; SVG внутри вписывается по центру */
+@media (min-width: 769px) {
+  .prow__pic { width: 100%; max-height: calc(var(--h-screen) - var(--nav-h) - var(--stack-head, 0px) - 4 * var(--stack-step) - 2 * var(--space-32)); } /* ширина колонки сохраняется, урезается только высота */
+}
+/* совсем низкое окно – стопки и прилипшего заголовка нет, плашки идут подряд */
+@media (max-height: 600px) and (min-width: 769px) {
+  .process__head, .prow { position: static; }
+  .prow__pic { max-height: none; }
+}
+/* ≥ 1600: схема на 4 колонки вместо 6 – плашка ниже, меньше разница по высоте с текстом */
+@media (min-width: 1600px) {
+  .prow__text { grid-column: 2 / 8; }
+  .prow__pic { grid-column: 9 / 13; }
+}
+@media (max-width: 1100px) {
+  .prow__text { grid-column: 2 / 7; }
+  .prow__pic { grid-column: 7 / 13; }
+}
+@media (max-width: 768px) {
+  .process { padding-top: var(--space-section-mobile); }
+  .process__title, .process__lead { grid-column: 1 / -1; }
+  .process__head { position: static; padding-top: 0; padding-bottom: var(--space-48); }
+  .prow { position: static; padding: var(--space-24) var(--space-16); outline: 0; } /* плашка выше экрана – стопка спрятала бы низ этапа */
+  /* номер – в правом верхнем углу плашки, текст – от левого края во всю ширину (решение клиента 2026-11-06).
+     Номер и текст в одной ячейке сетки, заголовку оставлено поле справа под номер */
+  .prow__num { grid-column: 1 / -1; grid-row: 1; justify-self: end; }
+  .prow__text { grid-column: 1 / -1; grid-row: 1; }
+  .prow__text h3 { padding-inline-end: var(--space-32); }
+  .prow__pic { grid-column: 1 / -1; grid-row: 2; }
+}
+
+/* 04 service – «После запуска»: фото лифтового холла офисного здания на всю ширину, поверх – тёмная плашка с текстом и кнопкой */
+.service { position: relative; min-height: var(--service-h); display: flex; align-items: flex-end; padding-block: var(--space-48); overflow: hidden; color: var(--color-fg-on-dark); }
+.service__photo { position: absolute; inset: 0; z-index: 0; }
+.service__photo img { width: 100%; height: 100%; object-fit: cover; object-position: var(--service-focus); }
+.service > .wrapper { position: relative; z-index: var(--z-content); }
+.service__card { grid-column: 1 / 7; display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-24); padding: var(--space-32); background: var(--color-bg-plaque); backdrop-filter: var(--filter-plaque); border: 1px solid var(--color-line-on-dark); border-radius: var(--radius-l); }
+.service__card p { max-width: var(--measure-lead); }
+.service .muted { color: var(--color-fg-muted-on-dark); }
+
+@media (max-width: 768px) {
+  .service { min-height: 0; padding-top: var(--service-photo-mobile); padding-bottom: var(--space-16); }
+  .service__card { grid-column: 1 / -1; padding: var(--space-24); }
+}
+/* 05 projects – объекты: две крупные карточки с фото, под фото – название и оборудование по одной линии */
+.projects__head { row-gap: var(--space-32); padding-bottom: var(--space-64); }
+.projects__title { grid-column: 1 / 8; }
+.projects__lead { grid-column: 1 / 6; } /* заголовок короткий – лид под ним, а не через пустую середину (проверка дизайна №30) */
+.projects__list { row-gap: var(--gutter); }
+.project { grid-column: span 6; display: flex; flex-direction: column; gap: var(--space-24); }
+.project__pic { aspect-ratio: var(--project-ratio); overflow: hidden; border-radius: var(--radius-l); background: var(--color-gray); }
+.project__pic img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--dur-1400) var(--ease-out); }
+.project__caption { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-24); padding-bottom: var(--space-24); border-bottom: 1px solid var(--color-line); }
+.project__caption p { color: var(--color-fg-muted); white-space: nowrap; }
+@media (hover: hover) {
+  .project:hover .project__pic img { transform: scale(var(--photo-zoom)); }
+}
+@media (max-width: 768px) {
+  .projects__title, .projects__lead, .project { grid-column: 1 / -1; }
+  .projects__head { padding-bottom: var(--space-48); }
+  .project__caption { flex-direction: column; gap: var(--space-4); }
+}
+
+/* 06 results – кабина стоит в центре экрана (float-stage), поверх в шахматном порядке плывут матовые карточки с цифрами (float, roll) */
+.results { background: var(--color-bg-page); padding-bottom: 0; }
+.results__head { row-gap: var(--space-24); padding-bottom: var(--space-48); }
+.results__title { grid-column: 1 / 8; }
+.results__lead { grid-column: 9 / 13; align-self: end; }
+/* кабина и карточки – в одной ячейке сетки: липкая кабина ограничена блоком и не свисает на следующую секцию
+   (отрицательный нижний отступ из концепта позволял ей выйти за контейнер) */
+.float { position: relative; display: grid; }
+.float__stage, .float__cards { grid-area: 1 / 1; }
+.float__stage { position: sticky; top: 0; align-self: start; height: var(--h-screen); display: flex; align-items: center; justify-content: center; overflow: hidden; pointer-events: none; }
+.float__stage::before { content: ""; position: absolute; width: var(--float-glow); height: var(--float-glow); border-radius: var(--radius-pill); background: var(--grad-glow); }
+.float__stage img { position: relative; height: var(--float-stage-img); width: auto; max-width: none; transform: scale(calc(0.94 + var(--p, 0.5) * 0.1)); }
+.float__cards { position: relative; z-index: var(--z-content); align-items: start; row-gap: var(--space-96); padding-top: var(--float-pad-top); padding-bottom: var(--float-pad-bottom); }
+.rcard { display: flex; flex-direction: column; gap: var(--space-24); padding: var(--space-32); background: var(--color-glass-light); backdrop-filter: var(--filter-glass-light); border: 1px solid var(--color-glass-light-line); border-radius: var(--radius-l); }
+.rcard__label { max-width: var(--measure-label); color: var(--color-fg-muted); }
+.rcard--1 { grid-column: 1 / 5; }
+.rcard--2 { grid-column: 9 / 13; margin-top: var(--space-144); }
+.rcard--3 { grid-column: 2 / 6; }
+.rcard--4 { grid-column: 8 / 12; margin-top: var(--space-96); }
+.rcard--5 { grid-column: 5 / 9; background: var(--color-glass-navy); color: var(--color-fg-on-dark); border-color: var(--color-line-on-dark); }
+.rcard--5 .rcard__label { color: var(--color-fg-muted-on-dark); }
+.results__note { grid-column: 1 / -1; position: relative; z-index: var(--z-content); padding-bottom: var(--space-32); color: var(--color-fg-muted); }
+
+@media (max-width: 1100px) {
+  .rcard--1, .rcard--3 { grid-column: 1 / 7; }
+  .rcard--2, .rcard--4 { grid-column: 7 / 13; }
+  .rcard--5 { grid-column: 4 / 10; }
+}
+@media (max-width: 768px) {
+  .results__title, .results__lead { grid-column: 1 / -1; }
+  .float__cards { row-gap: var(--space-48); }
+  .rcard--1, .rcard--2, .rcard--3, .rcard--4, .rcard--5 { grid-column: 1 / -1; margin-top: 0; }
+  .rcard { padding: var(--space-24); }
+}
+
+/* 07 contact – финал на высоту экрана, фирменный градиент как в hero: обращение и телефон слева, колонки справа, внизу тихая надпись United Lift */
+.contact { min-height: var(--h-screen); display: flex; flex-direction: column; justify-content: space-between; gap: var(--space-48); padding-top: var(--contact-pad-top); padding-bottom: var(--space-32); overflow: hidden; }
+.contact__main { row-gap: var(--space-48); }
+.contact__cta { grid-column: 1 / 8; display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-32); }
+.contact__cta .body-l { max-width: var(--measure-foot); }
+.contact__tel { white-space: nowrap; }
+.contact__col { display: flex; flex-direction: column; gap: var(--space-16); }
+.contact__col--a { grid-column: 9 / 11; }
+.contact__col--b { grid-column: 11 / 13; }
+.contact__col ul { display: flex; flex-direction: column; gap: var(--space-12); }
+.contact__col a { transition: color var(--dur-300) var(--ease-out); }
+.contact__bottom { align-items: end; row-gap: var(--space-24); }
+.contact__copy { grid-column: 1 / -1; justify-self: end; }
+.contact__mark { grid-column: 1 / -1; display: block; width: 100%; color: var(--color-wordmark); }
+.contact__mark svg { width: 100%; height: auto; }
+@media (hover: hover) {
+  .contact__col a:hover { color: var(--color-mist); }
+}
+@media (max-width: 1100px) {
+  .contact__cta { grid-column: 1 / -1; }
+  .contact__col--a { grid-column: 1 / 5; }
+  .contact__col--b { grid-column: 5 / 10; }
+}
+@media (max-width: 768px) {
+  .contact__col--a { grid-column: 1 / 3; }
+  .contact__col--b { grid-column: 3 / 5; }
+  .contact__copy { justify-self: start; }
+  .contact__bottom { row-gap: var(--space-12); }
+}
+@media (max-width: 500px) {
+  .contact__col--a, .contact__col--b { grid-column: 1 / -1; }
+}
