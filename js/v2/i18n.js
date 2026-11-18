@@ -36,8 +36,8 @@ const UZ = {
 
   'Четыре вида оборудования под задачи здания': 'Bino vazifalariga mos toʻrt turdagi uskuna',
   'Начинаем с назначения здания и потока людей, а не с каталога. Тип, производителя и комплектацию подбираем под объект.': 'Katalogdan emas, bino vazifasi va odamlar oqimidan boshlaymiz. Turi, ishlab chiqaruvchisi va komplektatsiyasini obyektga qarab tanlaymiz.',
-  'Панорамные лифты в атриуме': 'Atriumdagi panoramali liftlar',
-  'Эскалаторы на станции метро': 'Metro bekatidagi eskalatorlar',
+  'Лифты и панорамный лифт в холле офисного здания': 'Ofis binosi holidagi liftlar va panoramali lift',
+  'Эскалаторы в атриуме торгово-делового центра': 'Savdo-biznes markazi atriumidagi eskalatorlar',
   'Траволатор в терминале аэропорта': 'Aeroport terminalidagi travolator',
   'Подъёмная платформа для людей на креслах-колясках': 'Nogironlar aravachasidagi odamlar uchun koʻtargich platforma',
   'Лифты': 'Liftlar',
@@ -122,8 +122,8 @@ const EN = {
 
   'Четыре вида оборудования под задачи здания': 'Four types of equipment for what your building needs',
   'Начинаем с назначения здания и потока людей, а не с каталога. Тип, производителя и комплектацию подбираем под объект.': 'We start with the building’s purpose and foot traffic, not a catalogue. Type, manufacturer and configuration are chosen for each project.',
-  'Панорамные лифты в атриуме': 'Panoramic lifts in an atrium',
-  'Эскалаторы на станции метро': 'Escalators in a metro station',
+  'Лифты и панорамный лифт в холле офисного здания': 'Lifts and a panoramic lift in an office building lobby',
+  'Эскалаторы в атриуме торгово-делового центра': 'Escalators in the atrium of a retail and business centre',
   'Траволатор в терминале аэропорта': 'Moving walkway in an airport terminal',
   'Подъёмная платформа для людей на креслах-колясках': 'Platform lift for wheelchair users',
   'Лифты': 'Lifts',
